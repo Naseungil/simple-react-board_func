@@ -1,30 +1,19 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Axios from "axios";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-export default class View extends Component {
-  state = {
-    title: "",
-    content: "",
-  };
+const View = () => {
+  const [board, setBoard] = useState(null);
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  detail = () => {
-    let url = window.location.href;
-    let urlParams = url.split("?")[1];
-    console.log(urlParams); //id=1
-
-    const searchParams = new URLSearchParams(urlParams); //{id:1}
-
-    let id = searchParams.get("id"); //1
-
-    //글번호에 맞는 데이터 조회, 글 결과를 title, content반영, 수정모드 true
+  useEffect(() => {
     Axios.get(`http://localhost:8000/detail?id=${id}`)
       .then((res) => {
         const { data } = res;
-        console.log(data);
-        this.setState({
+        setBoard({
           title: data[0].BOARD_TITLE,
           content: data[0].BOARD_CONTENT,
         });
@@ -33,23 +22,26 @@ export default class View extends Component {
         // 에러 핸들링
         console.log(e);
       });
-  };
+  }, [id]);
 
-  componentDidMount() {
-    this.detail();
-  }
+  if (!board) return <div>Loading...</div>;
 
-  render() {
-    return (
-      <div>
-        <h2>{this.state.title}</h2>
-        <h2>본문</h2>
-        {this.state.content}
-        <hr />
-        <Link to="/" className="btn btn-secondary">
-          목록
-        </Link>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h2>{board.title}</h2>
+      <h2>본문</h2>
+      {board.content}
+      <hr />
+      <Button
+        variant="btn btn-secondary"
+        onClick={() => {
+          navigate(-1);
+        }}
+      >
+        목록
+      </Button>
+    </div>
+  );
+};
+
+export default View;
