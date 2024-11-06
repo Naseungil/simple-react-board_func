@@ -32,6 +32,7 @@ const View = () => {
       <h2>{board.title}</h2>
       <h2>본문</h2>
       {board.content}
+      <hr />
       <img
         src={`http://localhost:8000/${board.image}`}
         style={{ maxWidth: "300px" }}
